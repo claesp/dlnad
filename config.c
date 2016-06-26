@@ -14,21 +14,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef _DLNAD_H
-#define _DLNAD_H
+#include "dlnad.h"
 
-#include <sys/types.h>
-
-#define DLNAD_CONF_FILE				"/usr/local/etc/dlnad.conf"
-
-#define DLNAD_OPT_DONTDAEMONIZE		0x01
-#define DLNAD_OPT_VERBOSE			0x04
-
-struct dlnad {
-	uint32_t		flags;
-	const char		*conffile;
-};
-
-int		parse_config(const char *, struct dlnad *);
-
-#endif /* _DLNAD_H */
+int
+parse_config(const char *filename, struct dlnad *env)
+{
+	return (0);
+}

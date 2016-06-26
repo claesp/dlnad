@@ -20,22 +20,29 @@
 
 #include "dlnad.h"
 
+void			par_shutdown(struct dlnad *);
 __dead void		usage(void);
+
+struct dlnad	*dlnad_env;
 
 int
 main(int argc, char *argv[])
 {
 	int c;
-	const char *conffile = CONF_FILE;
+	uint32_t opts = 0;
+	struct dlnad *env;
+	const char *conffile = DLNAD_CONF_FILE;
 
-	while ((c = getopt(argc, argv, "Df:")) != -1) {
+	while ((c = getopt(argc, argv, "Df:v")) != -1) {
 		switch(c) {
 		case 'D':
-			fprintf(stdout, "-D\n");
+			opts |= DLNAD_OPT_DONTDAEMONIZE;
 			break;
 		case 'f':
 			conffile = optarg;
-			fprintf(stdout, "using conf file '%s'\n", conffile);
+			break;
+		case 'v':
+			opts |= DLNAD_OPT_VERBOSE;
 			break;
 		default:
 			usage();
@@ -46,7 +53,27 @@ main(int argc, char *argv[])
 	if (argc > 0)
 		usage();
 
+	if ((env = calloc(1, sizeof(*env))) == NULL)
+		exit(1);
+
+	dlnad_env = env;
+
+	env->conffile = conffile;
+	env->flags = opts;
+
+	if (parse_config(env->conffile, env) == -1)
+		exit(1);
+
+	par_shutdown(env);
+
 	return (0);
+}
+
+void
+par_shutdown(struct dlnad *env)
+{
+	free(env);
+	exit(0);
 }
 
 __dead void
